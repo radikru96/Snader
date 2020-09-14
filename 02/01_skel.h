@@ -1,16 +1,14 @@
-———————————————————————————————————————————————————————————skel.h
- 1 #ifndef __SKEL_H__
- 2 #define __SKEL_H__
- 3 /* âåðñèÿ äëÿ UNIX */
- 4 #define INIT()				( program_name = \
- 5									strrchr( argv[ 0 ], '/' ) ) ? \
- 6									program_name++ : \
- 7									( program_name = argv[ 0 ] )
- 8 #define EXIT(s)				exit( s )
- 9 #define CLOSE(s)			if ( close( s ) ) error( 1, errno, \
-10									"îøèáêà close " )
-11 #define set_errno(e)		errno = ( e )
-12 #define isvalidsock(s)	( ( s ) >= 0 )
-13 typedef int SOCKET;
-14 #endif  /* __SKEL_H__ */
-———————————————————————————————————————————————————————————skel.h
+#ifndef __SKEL_H__
+#define __SKEL_H__
+/* Ð²ÐµÑ€ÑÐ¸Ñ Ð´Ð»Ñ UNIX */
+#define INIT()				( program_name = \
+							strrchr( argv[ 0 ], '/' ) ) ? \
+							program_name++ : \
+							( program_name = argv[ 0 ] )
+#define EXIT(s)				exit( s )
+#define CLOSE(s)			if ( close( s ) ) error( 1, errno, \
+							"Ð¾ÑˆÐ¸Ð±ÐºÐ° close " )
+#define set_errno(e)		errno = ( e )
+#define isvalidsock(s)      ( ( s ) >= 0 )
+typedef int SOCKET;
+#endif  /* __SKEL_H__ */

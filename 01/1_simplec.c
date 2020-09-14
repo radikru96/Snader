@@ -1,41 +1,39 @@
-————————————————————————————————————————————————————————simplec.c
-1 #include <sys/types.h>
-2 #include <sys/socket.h>
-3 #include <netinet/in.h>
-4 #include <arpa/inet.h>
-5 #include <stdio.h>
-6 int main( void )
-7 {
-8	struct sockaddr_in peer;
-9	int s;
-10	int rc;
-11	char buf[ 1 ];
-12	peer.sin_family = AF_INET;
-13	peer.sin_port = htons( 7500 );
-14	peer.sin_addr.s_addr = inet_addr( "127.0.0.1" );
-15	s = socket( AF_INET, SOCK_STREAM, 0 );
-16	if ( s < 0 )
-17	{
-18		perror( "îøèáêà âûçîâà socket" );
-19		exit( 1 );
-20	}
-21	rc = connect( s, ( struct sockaddr * )&peer, sizeof( peer ) );
-22	if ( rc )
-23	{
-24		perror( "îøèáêà âûçîâà connect" );
-25		exit( 1 );
-26	}
-27	rc = send( s, "1", 1, 0 );
-28	if ( rc <= 0 )
-29	{
-30		perror( "îøèáêà âûçîâà send" );
-31		exit( 1 );
-32	}
-33	rc = recv( s, buf, 1, 0 );
-34	if ( rc <= 0 )
-35		perror( "îøèáêà âûçîâà recv" );
-36	else
-37		printf( "%c\n", buf[ 0 ] );
-38	exit( 0 );
-39 }
-————————————————————————————————————————————————————————simplec.c
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+int main( void )
+{
+struct sockaddr_in peer;
+int s;
+    int rc;
+    char buf[ 1 ];
+    peer.sin_family = AF_INET;
+    peer.sin_port = htons( 7500 );
+    peer.sin_addr.s_addr = inet_addr( "127.0.0.1" );
+    s = socket( AF_INET, SOCK_STREAM, 0 );
+    if ( s < 0 )
+    {
+        perror( "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° socket" );
+        exit( 1 );
+    }
+    rc = connect( s, ( struct sockaddr * )&peer, sizeof( peer ) );
+    if ( rc )
+    {
+        perror( "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° connect" );
+        exit( 1 );
+    }
+    rc = send( s, "1", 1, 0 );
+    if ( rc <= 0 )
+    {
+        perror( "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° send" );
+        exit( 1 );
+    }
+    rc = recv( s, buf, 1, 0 );
+    if ( rc <= 0 )
+        perror( "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° recv" );
+    else
+        printf( "%c\n", buf[ 0 ] );
+    exit( 0 );
+}

@@ -1,50 +1,48 @@
-————————————————————————————————————————————————————————tcpsink.c
- 1 int main( int argc, char **argv )
- 2 {
- 3		struct sockaddr_in local;
- 4		struct sockaddr_in peer;
- 5		int peerlen;
- 6		SOCKET s1;
- 7		SOCKET s;
- 8		int c;
- 9		int rcvbufsz = 32 * 1024;
-10		const int on = 1;
-11		INIT();
-12		opterr = 0;
-13		while ( ( c = getopt( argc, argv, "b:" ) ) != EOF )
-14		{
-15			switch ( c )
-16			{
-17				case "b" :
-18					rcvbufsz = atoi( optarg );
-19					break;
-20				case "?" :
-21					error( 1, 0, "недопустимая опция: %c\n", c );
-22			}
-23		}
-24		set_address( NULL, "9000", &local, "tcp" );
-25		s = socket( AF_INET, SOCK_STREAM, 0 );
-26		if ( !isvalidsock( s ) )
-27			error( 1, errno, "ошибка вызова socket" );
-28		if ( setsockopt( s, SOL_SOCKET, SO_REUSEADDR,
-29			( char * )&on, sizeof( on ) ) )
-30			error( 1, errno, "ошибка вызова setsockopt SO_REUSEADDR" );
-31		if ( setsockopt( s, SOL_SOCKET, SO_RCVBUF,
-32			( char * )&rcvbufsz, sizeof( rcvbufsz ) ) )
-33			error( 1, errno, "ошибка вызова setsockopt SO_RCVBUF" );
-34		if ( bind( s, ( struct sockaddr * ) &local,
-35			 sizeof( local ) ) )
-36			error( 1, errno, "ошибка вызова bind" );
-37		listen( s, 5 );
-38		do
-39		{
-40			peerlen = sizeof( peer );
-41			s1 = accept( s, ( struct sockaddr * )&peer, &peerlen );
-42			if ( !isvalidsock( s1 ) )
-43				error( 1, errno, "ошибка вызова accept" );
-44			server( s1, rcvbufsz );
-45			CLOSE( s1 );
-46		} while ( 0 );
-47		EXIT( 0 );
-48 }
-————————————————————————————————————————————————————————tcpsink.c
+int main( int argc, char **argv )
+{
+	struct sockaddr_in local;
+	struct sockaddr_in peer;
+	int peerlen;
+	SOCKET s1;
+	SOCKET s;
+	int c;
+	int rcvbufsz = 32 * 1024;
+	const int on = 1;
+	INIT();
+	opterr = 0;
+	while ( ( c = getopt( argc, argv, "b:" ) ) != EOF )
+	{
+		switch ( c )
+		{
+			case "b" :
+				rcvbufsz = atoi( optarg );
+				break;
+			case "?" :
+				error( 1, 0, "РЅРµРґРѕРїСѓСЃС‚РёРјР°СЏ РѕРїС†РёСЏ: %c\n", c );
+		}
+	}
+	set_address( NULL, "9000", &local, "tcp" );
+	s = socket( AF_INET, SOCK_STREAM, 0 );
+	if ( !isvalidsock( s ) )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° socket" );
+	if ( setsockopt( s, SOL_SOCKET, SO_REUSEADDR,
+		( char * )&on, sizeof( on ) ) )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° setsockopt SO_REUSEADDR" );
+	if ( setsockopt( s, SOL_SOCKET, SO_RCVBUF,
+		( char * )&rcvbufsz, sizeof( rcvbufsz ) ) )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° setsockopt SO_RCVBUF" );
+	if ( bind( s, ( struct sockaddr * ) &local,
+		 sizeof( local ) ) )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° bind" );
+	listen( s, 5 );
+	do
+	{
+		peerlen = sizeof( peer );
+		s1 = accept( s, ( struct sockaddr * )&peer, &peerlen );
+		if ( !isvalidsock( s1 ) )
+			error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° accept" );
+		server( s1, rcvbufsz );
+		CLOSE( s1 );
+	} while ( 0 );
+	EXIT( 0 );
+}

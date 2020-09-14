@@ -1,60 +1,58 @@
-———————————————————————————————————————————————————tcpserver.skel
- 1 #include <stdio.h>
- 2 #include <stdlib.h>
- 3 #include <unistd.h>
- 4 #include <stdarg.h>
- 5 #include <string.h>
- 6 #include <errno.h>
- 7 #include <netdb.h>
- 8 #include <fcntl.h>
- 9 #include <sys/time.h>
-10 #include <sys/socket.h>
-11 #include <netinet/in.h>
-12 #include <arpa/inet.h>
-13 #include "skel.h"
-14 char *program_name;
-15 int main( int argc, char **argv )
-16 		{
-17		struct sockaddr_in local;
-18		struct sockaddr_in peer;
-19		char *hname;
-20		char *sname;
-21		int peerlen;
-22		SOCKET s1;
-23		SOCKET s;
-24		const int on = 1;
-25		INIT();
-26		if ( argc == 2 )
-27		{
-28			hname = NULL;
-29			sname = argv[ 1 ];
-30		}
-31		else
-32		{
-33			hname = argv[ 1 ];
-34			sname = argv[ 2 ];
-35		}
-36		set_address( hname, sname, &local, "tcp" );
-37		s = socket( AF_INET, SOCK_STREAM, 0 );
-38		if ( !isvalidsock( s ) )
-39			error( 1, errno, "îøèáêà âûçîâà socket" );
-40		if ( setsockopt( s, SOL_SOCKET, SO_REUSEADDR, &on,
-41			 sizeof( on ) ) )
-42			error( 1, errno, "îøèáêà âûçîâà setsockopt" );
-43		if ( bind( s, ( struct sockaddr * ) &local,
-44			 sizeof( local ) ) )
-45			error( 1, errno, "îøèáêà âûçîâà bind" );
-46		if ( listen( s, NLISTEN ) )
-47			error( 1, errno, "îøèáêà âûçîâà listen" );
-48		do
-49		{
-50			peerlen = sizeof( peer );
-51			s1 = accept( s, ( struct sockaddr * )&peer, &peerlen );
-52			if ( !isvalidsock( s1 ) )
-53				error( 1, errno, "îøèáêà âûçîâà accept" );
-54			server( s1, &peer );
-55			CLOSE( s1 );
-56		} while ( 1 );
-57		EXIT( 0 );
-58 }
-———————————————————————————————————————————————————tcpserver.skel
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <string.h>
+#include <errno.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include "skel.h"
+char *program_name;
+int main( int argc, char **argv )
+{
+	struct sockaddr_in local;
+	struct sockaddr_in peer;
+	char *hname;
+	char *sname;
+	int peerlen;
+	SOCKET s1;
+	SOCKET s;
+	const int on = 1;
+	INIT();
+	if ( argc == 2 )
+	{
+		hname = NULL;
+		sname = argv[ 1 ];
+	}
+	else
+	{
+		hname = argv[ 1 ];
+		sname = argv[ 2 ];
+	}
+	set_address( hname, sname, &local, "tcp" );
+	s = socket( AF_INET, SOCK_STREAM, 0 );
+	if ( !isvalidsock( s ) )
+		error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° socket" );
+	if ( setsockopt( s, SOL_SOCKET, SO_REUSEADDR, &on,
+		 sizeof( on ) ) )
+		error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° setsockopt" );
+	if ( bind( s, ( struct sockaddr * ) &local,
+		 sizeof( local ) ) )
+		error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° bind" );
+	if ( listen( s, NLISTEN ) )
+		error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° listen" );
+	do
+	{
+		peerlen = sizeof( peer );
+		s1 = accept( s, ( struct sockaddr * )&peer, &peerlen );
+		if ( !isvalidsock( s1 ) )
+			error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° accept" );
+		server( s1, &peer );
+		CLOSE( s1 );
+	} while ( 1 );
+	EXIT( 0 );
+}

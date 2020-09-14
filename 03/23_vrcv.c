@@ -1,24 +1,22 @@
-———————————————————————————————————————————————————————————vrcv.c
- 1 #include "etcp.h"
- 2 #include <sys/uio.h>
- 3 int main( int argc, char **argv )
- 4 {
- 5		SOCKET s;
- 6		int n;
- 7		char buf[ 128 ];
- 8		struct iovec iov[ 2 ];
- 9		INIT();
-10		s = tcp_client( argv[ 1 ], argv[ 2 ] );
-11		iov[ 0 ].iov_base = ( char * )&n;
-12		iov[ 0 ].iov_len = sizeof( n );
-13		iov[ 1 ].iov_base = buf;
-14		while ( fgets( buf, sizeof( buf ), stdin ) != NULL )
-15		{
-16			iov[ 1 ].iov_len = strlen( buf );
-17			n = htonl( iov[ 1 ].iov_len );
-18			if ( writev( s, iov, 2 ) < 0 )
-19				error( 1, errno, "îøèáêà âûçîâà writev" );
-20		}
-21		EXIT( 0 );
-22 }
-———————————————————————————————————————————————————————————vrcv.c
+#include "etcp.h"
+#include <sys/uio.h>
+int main( int argc, char **argv )
+{
+	SOCKET s;
+	int n;
+	char buf[ 128 ];
+	struct iovec iov[ 2 ];
+	INIT();
+	s = tcp_client( argv[ 1 ], argv[ 2 ] );
+	iov[ 0 ].iov_base = ( char * )&n;
+	iov[ 0 ].iov_len = sizeof( n );
+	iov[ 1 ].iov_base = buf;
+	while ( fgets( buf, sizeof( buf ), stdin ) != NULL )
+	{
+		iov[ 1 ].iov_len = strlen( buf );
+		n = htonl( iov[ 1 ].iov_len );
+		if ( writev( s, iov, 2 ) < 0 )
+			error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° writev" );
+	}
+	EXIT( 0 );
+}

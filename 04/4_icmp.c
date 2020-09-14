@@ -1,56 +1,54 @@
-———————————————————————————————————————————————————————————icmp.c
- 1 static void print_dg( char *dg, int len )
- 2 {
- 3		struct ip *ip;
- 4		struct icmp *icmp;
- 5		struct hostent *hp;
- 6		char *hname;
- 7		int hl;
- 8		static char *redirect_code[] =
- 9		{
-10			"ñåòü", "õîñò",
-11			"òèï ñåðâèñà è ñåòü", "òèï ñåðâèñà è õîñò"
-12		};
-13		static char *timexceed_code[] =
-14		{
-15			"òðàíçèòå", "ñáîðêå"
-16		};
-17		static char *param_code[] =
-18		{
-19			"Ïëîõîé IP-çàãîëîâîê", "Íåò îáÿçàòåëüíîé îïöèè"
-20		};
-21		ip = ( struct ip * )dg;
-22		if ( ip->ip_v != 4 )
-23		{
-24			error( 0, 0, "IP-äàòàãðàììà íå âåðñèè 4\n" );
-25			return;
-26		}
-27		hl = ip->ip_hl << 2;	/* Äëèíà IP-çàãîëîâêà â áàéòàõ. */
-28		if ( len < hl + ICMP_MINLEN )
-29		{
-30			error( 0, 0, "short datagram (%d bytes) from %s\n",
-31				len, inet_ntoa( ip->ip_src ) );
-32			return;
-33		}
-34		hp = gethostbyaddr( ( char * )&ip->ip_src, 4, AF_INET );
-35		if ( hp == NULL )
-36			hname = "";
-37		else
-38			hname = hp->h_name;
-39		icmp = ( struct icmp * )( dg + hl );  /* ICMP-ïàêåò. */
-40		printf( "ICMP %s (%d) îò %s (%s)\n",
-41			get_type( icmp->icmp_type ),
-42			icmp->icmp_type, hname, inet_ntoa( ip->ip_src ) );
-43		if ( icmp->icmp_type == ICMP_UNREACH )
-44			print_unreachable( icmp );
-45		else if ( icmp->icmp_type == ICMP_REDIRECT )
-46			printf( "\tÏåðåíàïðàâëåíèå íà %s\n", icmp->icmp_code <= 3 ?
-47				redirect_code[ icmp->icmp_code ] : "Íåêîððåêòíûé êîä" );
-48		else if ( icmp->icmp_type == ICMP_TIMXCEED )
-49			printf( "\tTTL == 0 ïðè %s\n", icmp->icmp_code <= 1 ?
-50			timexceed_code[ icmp->icmp_code ] : "Íåêîððåêòíûé êîä" );
-51		else if ( icmp->icmp_type == ICMP_PARAMPROB )
-52			printf( "\t%s\n", icmp->icmp_code <= 1 ?
-53				param_code[ icmp->icmp_code ] : "Íåêîððåêòíûé êîä" );
-54 }
-———————————————————————————————————————————————————————————icmp.c
+static void print_dg( char *dg, int len )
+{
+	struct ip *ip;
+	struct icmp *icmp;
+	struct hostent *hp;
+	char *hname;
+	int hl;
+	static char *redirect_code[] =
+	{
+		"ÑÐµÑ‚ÑŒ", "Ñ…Ð¾ÑÑ‚",
+		"Ñ‚Ð¸Ð¿ ÑÐµÑ€Ð²Ð¸ÑÐ° Ð¸ ÑÐµÑ‚ÑŒ", "Ñ‚Ð¸Ð¿ ÑÐµÑ€Ð²Ð¸ÑÐ° Ð¸ Ñ…Ð¾ÑÑ‚"
+	};
+	static char *timexceed_code[] =
+	{
+		"Ñ‚Ñ€Ð°Ð½Ð·Ð¸Ñ‚Ðµ", "ÑÐ±Ð¾Ñ€ÐºÐµ"
+	};
+	static char *param_code[] =
+	{
+		"ÐŸÐ»Ð¾Ñ…Ð¾Ð¹ IP-Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº", "ÐÐµÑ‚ Ð¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ð¹ Ð¾Ð¿Ñ†Ð¸Ð¸"
+	};
+	ip = ( struct ip * )dg;
+	if ( ip->ip_v != 4 )
+	{
+		error( 0, 0, "IP-Ð´Ð°Ñ‚Ð°Ð³Ñ€Ð°Ð¼Ð¼Ð° Ð½Ðµ Ð²ÐµÑ€ÑÐ¸Ð¸ 4\n" );
+		return;
+	}
+	hl = ip->ip_hl << 2;	/* Ð”Ð»Ð¸Ð½Ð° IP-Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ° Ð² Ð±Ð°Ð¹Ñ‚Ð°Ñ…. */
+	if ( len < hl + ICMP_MINLEN )
+	{
+		error( 0, 0, "short datagram (%d bytes) from %s\n",
+			len, inet_ntoa( ip->ip_src ) );
+		return;
+	}
+	hp = gethostbyaddr( ( char * )&ip->ip_src, 4, AF_INET );
+	if ( hp == NULL )
+		hname = "";
+	else
+		hname = hp->h_name;
+	icmp = ( struct icmp * )( dg + hl );  /* ICMP-Ð¿Ð°ÐºÐµÑ‚. */
+	printf( "ICMP %s (%d) Ð¾Ñ‚ %s (%s)\n",
+		get_type( icmp->icmp_type ),
+		icmp->icmp_type, hname, inet_ntoa( ip->ip_src ) );
+	if ( icmp->icmp_type == ICMP_UNREACH )
+		print_unreachable( icmp );
+	else if ( icmp->icmp_type == ICMP_REDIRECT )
+		printf( "\tÐ¿ÐµÑ€ÐµÐ½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð° %s\n", icmp->icmp_code <= 3 ?
+			redirect_code[ icmp->icmp_code ] : "Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¹ ÐºÐ¾Ð´" );
+	else if ( icmp->icmp_type == ICMP_TIMXCEED )
+		printf( "\tTTL == 0 Ð¿Ñ€Ð¸ %s\n", icmp->icmp_code <= 1 ?
+		timexceed_code[ icmp->icmp_code ] : "Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¹ ÐºÐ¾Ð´" );
+	else if ( icmp->icmp_type == ICMP_PARAMPROB )
+		printf( "\t%s\n", icmp->icmp_code <= 1 ?
+			param_code[ icmp->icmp_code ] : "Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¹ ÐºÐ¾Ð´" );
+}

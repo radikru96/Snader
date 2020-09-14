@@ -1,26 +1,24 @@
-—————————————————————————————————————————————————————telemetrys.c
- 1 	#include "etcp.h"
- 2 	#define TWOINTS		( sizeof( int ) * 2 )
- 3 	#define THREEINTS		( sizeof( int ) * 3 )
- 4 	int main( int argc, char **argv )
- 5 	{
- 6		SOCKET s;
- 7		SOCKET s1;
- 8		int rc;
- 9		int i = 1;
-10		int pkt[ 3 ];
-11		INIT();
-12		s = tcp_server( NULL, argv[ 1 ] );
-13		s1 = accept( s, NULL, NULL );
-14		if ( !isvalidsock( s1 ) )
-15			error( 1, errno, "ошибка вызова accept" );
-16		for ( ;; )
-17		{
-18			rc = recv( s1, ( char * )pkt, sizeof( pkt ), 0 );
-19			if ( rc != TWOINTS && rc != THREEINTS )
-20				error( 1, 0, "recv вернула %d\n", rc );
-21			printf( "Пакет %d содержит %d значений в %d байтах\n",
-22				i++, ntohl( pkt[ 0 ] ), rc );
-23		}
-24 }
-—————————————————————————————————————————————————————telemetrys.c
+#include "etcp.h"
+#define TWOINTS		( sizeof( int ) * 2 )
+#define THREEINTS		( sizeof( int ) * 3 )
+int main( int argc, char **argv )
+{
+    SOCKET s;
+    SOCKET s1;
+    int rc;
+    int i = 1;
+    int pkt[ 3 ];
+    INIT();
+    s = tcp_server( NULL, argv[ 1 ] );
+    s1 = accept( s, NULL, NULL );
+    if ( !isvalidsock( s1 ) )
+        error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° accept" );
+    for ( ;; )
+    {
+        rc = recv( s1, ( char * )pkt, sizeof( pkt ), 0 );
+        if ( rc != TWOINTS && rc != THREEINTS )
+            error( 1, 0, "recv РІРµСЂРЅСѓР»Р° %d\n", rc );
+        printf( "РџР°РєРµС‚ %d СЃРѕРґРµСЂР¶РёС‚ %d Р·РЅР°С‡РµРЅРёР№ РІ %d Р±Р°Р№С‚Р°С…\n",
+            i++, ntohl( pkt[ 0 ] ), rc );
+    }
+}

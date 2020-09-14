@@ -1,28 +1,26 @@
-———————————————————————————————————————————————————————————keep.c
- 1 	#include "etcp.h"
- 2 	int main( int argc, char **argv )
- 3 	{
- 4		SOCKET s;
- 5		SOCKET s1;
- 6		int on = 1;
- 7		int rc;
- 8		char buf[ 128 ];
- 9		INIT();
-10		s = tcp_server( NULL, argv[ 1 ] );
-11		s1 = accept( s, NULL, NULL );
-12		if ( !isvalidsock( s1 ) )
-13			error( 1, errno, "ошибка вызова accept\n" );
-14		if ( setsockopt( s1, SOL_SOCKET, SO_KEEPALIVE,
-15			( char * )&on, sizeof( on ) ) )
-16			error( 1, errno, "ошибка вызова setsockopt" );
-17		for ( ;; )
-18		{
-19			rc = readline( s1, buf, sizeof( buf ) );
-20			if ( rc == 0 )
-21				error( 1, 0, "другой конец отключился\n" );
-22			if ( rc < 0 )
-23				error( 1, errno, "ошибка вызова recv" );
-24			write( 1, buf, rc );
-25			}
-26 	}
-———————————————————————————————————————————————————————————keep.c
+#include "etcp.h"
+int main( int argc, char **argv )
+{
+    SOCKET s;
+    SOCKET s1;
+    int on = 1;
+    int rc;
+    char buf[ 128 ];
+    INIT();
+    s = tcp_server( NULL, argv[ 1 ] );
+    s1 = accept( s, NULL, NULL );
+    if ( !isvalidsock( s1 ) )
+        error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° accept\n" );
+    if ( setsockopt( s1, SOL_SOCKET, SO_KEEPALIVE,
+        ( char * )&on, sizeof( on ) ) )
+        error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° setsockopt" );
+    for ( ;; )
+    {
+        rc = readline( s1, buf, sizeof( buf ) );
+        if ( rc == 0 )
+            error( 1, 0, "РґСЂСѓРіРѕР№ РєРѕРЅРµС† РѕС‚РєР»СЋС‡РёР»СЃСЏ\n" );
+        if ( rc < 0 )
+            error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° recv" );
+        write( 1, buf, rc );
+    }
+}

@@ -1,26 +1,24 @@
-——————————————————————————————————————————————————————————count.c
- 1 #include "etcp.h"
- 2 int main( int argc, char **argv )
- 3 		{
- 4		SOCKET s;
- 5		SOCKET s1;
- 6		int rc;
- 7		int len;
- 8		int counter = 1;
- 9		char buf[ 120 ];
-10		INIT();
-11		s = tcp_server( NULL, argv[ 1 ] );
-12		s1 = accept( s, NULL, NULL );
-13		if ( !isvalidsock( s1 ) )
-14			error( 1, errno, "îøèáêà âûçîâà accept" );
-15		while ( ( rc = readline( s1, buf, sizeof( buf ) ) ) > 0 )
-16		{
-17			sleep( 5 );
-18			len = sprintf( buf, "ïîëó÷åíî ñîîáùåíèå %d\n", counter++ );
-19			rc = send( s1, buf, len, 0 );
-20			if ( rc < 0 )
-21				error( 1, errno, "îøèáêà âûçîâà send" );
-22		}
-23		EXIT( 0 );
-24 }
-——————————————————————————————————————————————————————————count.c
+#include "etcp.h"
+int main( int argc, char **argv )
+{
+	SOCKET s;
+	SOCKET s1;
+	int rc;
+	int len;
+	int counter = 1;
+	char buf[ 120 ];
+	INIT();
+	s = tcp_server( NULL, argv[ 1 ] );
+	s1 = accept( s, NULL, NULL );
+	if ( !isvalidsock( s1 ) )
+		error( 1, errno, "Ğ¾ÑˆĞ¸Ğ±ĞºĞ° Ğ²Ñ‹Ğ·Ğ¾Ğ²Ğ° accept" );
+	while ( ( rc = readline( s1, buf, sizeof( buf ) ) ) > 0 )
+	{
+		sleep( 5 );
+		len = sprintf( buf, "Ğ¿Ğ¾Ğ»ÑƒÑ‡ĞµĞ½Ğ¾ ÑĞ¾Ğ¾Ğ±Ñ‰ĞµĞ½Ğ¸Ğµ %d\n", counter++ );
+		rc = send( s1, buf, len, 0 );
+		if ( rc < 0 )
+			error( 1, errno, "Ğ¾ÑˆĞ¸Ğ±ĞºĞ° Ğ²Ñ‹Ğ·Ğ¾Ğ²Ğ° send" );
+	}
+	EXIT( 0 );
+}

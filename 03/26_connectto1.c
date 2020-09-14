@@ -1,14 +1,12 @@
-—————————————————————————————————————————————————————connectto1.c
- 1 int isconnected( SOCKET s, fd_set *rd, fd_set *wr, fd_set *ex )
- 2 {
- 3		int err;
- 4		int len = sizeof( err );
- 5		errno = 0;			/* Ïğåäïîëàãàåì, ÷òî îøèáêè íåò. */
- 6		if ( !FD_ISSET( s, rd ) && !FD_ISSET( s, wr ) )
- 7			return 0;
- 8		if ( getsockopt( s, SOL_SOCKET, SO_ERROR, &err, &len ) < 0 )
- 9			return 0;
-10		errno = err;		/* Åñëè ìû íå ñîåäèíèëèñü. */
-11		return err == 0;
-12 }
-—————————————————————————————————————————————————————connectto1.c
+int isconnected( SOCKET s, fd_set *rd, fd_set *wr, fd_set *ex )
+{
+	int err;
+	int len = sizeof( err );
+	errno = 0;			/* ĞŸÑ€ĞµĞ´Ğ¿Ğ¾Ğ»Ğ°Ğ³Ğ°ĞµĞ¼, Ñ‡Ñ‚Ğ¾ Ğ¾ÑˆĞ¸Ğ±ĞºĞ¸ Ğ½ĞµÑ‚. */
+	if ( !FD_ISSET( s, rd ) && !FD_ISSET( s, wr ) )
+		return 0;
+	if ( getsockopt( s, SOL_SOCKET, SO_ERROR, &err, &len ) < 0 )
+		return 0;
+	errno = err;		/* Ğ•ÑĞ»Ğ¸ Ğ¼Ñ‹ Ğ½Ğµ ÑĞ¾ĞµĞ´Ğ¸Ğ½Ğ¸Ğ»Ğ¸ÑÑŒ. */
+	return err == 0;
+}

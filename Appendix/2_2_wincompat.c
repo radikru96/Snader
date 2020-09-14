@@ -1,105 +1,93 @@
-———————————————————————————————————————————————————————————wincompat.c
- 1 #include <sys/timeb.h>
- 2 #include "etcp.h"
- 3 #include <winsock2.h>
- 4 #define MINBSDSOCKERR			( WSAEWOULDBLOCK )
- 5 #define MAXBSDSOCKERR			( MINBSDSOCKERR + \
- 6									( sizeof( bsdsocketerrs ) / \
- 7									sizeof( bsdsocketerrs[ 0 ] ) ) )
- 8 extern int sys_nerr;
- 9 extern char *sys_errlist[];
-10 extern char *program_name;
-11 static char *bsdsocketerrs[] =
-12 {
-13	"Resource temporarily unavailable",	/* Ðåñóðñ âðåìåííî íåäîñòóïåí. */
-14	"Operation now in progress",			/* Îïåðàöèÿ íà÷àëà âûïîëíÿòüñÿ. */
-15	"Operation already in progress",	/* Îïåðàöèÿ óæå âûïîëíÿåòñÿ. */
-16	"Socket operation on non-socket",		/* Îïåðàöèÿ ñîêåòà íå íàä ñîêåòîì. */
-17	"Destination address required",		/* Íóæåí àäðåñ íàçíà÷åíèÿ. */
-18	"Message too long",						/* Ñëèøêîì äëèííîå ñîîáùåíèå. */
-19	"Protocol wrong type for socket",		/* Íåâåðíûé òèï ïðîòîêîëà äëÿ ñîêåòà. */
-20	"Bad protocol option",					/* Íåêîððåêòíàÿ îïöèÿ ïðîòîêîëà. */
-21	"Protocol not supported",				/* Ïðîòîêîë íå ïîääåðæèâàåòñÿ. */
-22	"Socket type not supported",			/* Òèï ñîêåòà íå ïîääåðæèâàåòñÿ. */
-23	"Operation not supported",				/* Îïåðàöèÿ íå ïîääåðæèâàåòñÿ. */
-24	"Protocol family not supported",	/* Ñåìåéñòâî ïðîòîêîëîâ íå */
-											/* ïîääåðæèâàåòñÿ. */
-25	"Address family not supported by protocol family", /* Àäðåñíîå ñåìåéñòâî */
-								/* íå ïîääåðæèâàåòñÿ ñåìåéñòâîì ïðîòîêîëîâ*/	26	"Address already in use",				/* Àäðåñ óæå èñïîëüçóåòñÿ. */
-27	"Can’t assign requested address",	/* Íå ìîãó âûäåëèòü çàòðåáîâàííûé */
-											/* àäðåñ. */
-28	"Network is down",						/* Ñåòü íå ðàáîòàåò. */
-29	"Network is unreachable",				/* Ñåòü íåäîñòóïíà. */
-30	"Network dropped connection on reset", /* Ñåòü ñáðîñèëà ñîåäèíåíèå */
-											/* ïðè ïåðåçàãðóçêå. */
-31	"Software caused connection abort", 	/* Ïðîãðàììíûé ðàçðûâ ñîåäèíåíèÿ. */
-32	"Connection reset by peer",			/* Ñîåäèíåíèå ñáðîøåíî äðóãîé */
-											/* ñòîðîíîé. */
-33	"No buffer space available",			/* Íåò áóôåðîâ. */
-34	"Socket is already connected",			/* Ñîêåò óæå ñîåäèíåí. */
-35	"Socket is not connected",				/* Ñîêåò íå ñîåäèíåí. */
-36	"Cannot send after socket shutdown",	/* Íå ìîãó ïîñëàòü äàííûå ïîñëå */
-											/* ðàçìûêàíèÿ. */
-37	"Too many references: can’t splice", /* Ñëèøêîì ìíîãî ññûëîê. */
-38	"Connection timed out",					/* Òàéìàóò íà ñîåäèíåíèè. */
-39	"Connection refused",					/* Â ñîåäèíåíèè îòêàçàíî. */
-40	"Too many levels of symbolic links",	/* Ñëèøêîì ìíîãî óðîâíåé */
-											/* ñèìâîëè÷åñêèõ ññûëîê. */
-41	"File name too long",					/* Ñëèøêîì äëèííîå èìÿ ôàéëà. */
-42	"Host is down",							/* Õîñò íå ðàáîòàåò. */
-43	"No route to host"						/* Íåò ìàðøðóòà ê õîñòó. */
-44 };
-45 void init( char **argv )
-46 {
-47		WSADATA wsadata;
-48		( program_name = strrchr( argv[ 0 ], '\\' ) ) ?
-49			program_name++ : ( program_name = argv[ 0 ] );
-50		WSAStartup( MAKEWORD( 2, 2 ), &wsadata );
-51	}
-52 /* inet_aton - âåðñèÿ inet_aton äëÿ SVr4 è Windows. */
-53 int inet_aton( char *cp, struct in_addr *pin )
-54 {
-55    int rc;
-56		rc = inet_addr( cp );
-57		if ( rc == -1 && strcmp( cp, "255.255.255.255" ) )
-58			return 0;
-59		pin->s_addr = rc;
-60		return 1;
-61 }
-62 /* gettimeofday - äëÿ tselect. */
-63 int gettimeofday( struct timeval *tvp, struct timezone *tzp )
-64 {
-65		struct _timeb tb;
-66		_ftime( &tb );
-67		if ( tvp )
-68		{
-69			tvp->tv_sec = tb.time;
-70			tvp->tv_usec = tb.millitm * 1000;
-71		}
-72		if ( tzp )
-73		{
-74			tzp->tz_minuteswest = tb.timezone;
-75			tzp->tz_dsttime = tb.dstflag;
-76		}
-77 }
-78 /* strerror - âåðñèÿ, âêëþ÷àþùàÿ êîäû îøèáîê Winsock. */
-79 char *strerror( int err )
-80 {
-81		if ( err >= 0 && err < sys_nerr )
-82			return sys_errlist[ err ];
-83		else if ( err >= MINBSDSOCKERR && err < MAXBSDSOCKERR )
-84			return bsdsocketerrs[ err - MINBSDSOCKERR ];
-85		else if ( err == WSASYSNOTREADY )
-86			return "Network subsystem is unusable";
-						/* Ñ0åòåâàÿ ïîäñèñòåìà íåðàáîòîñïîñîáíà. */
-87		else if ( err == WSAVERNOTSUPPORTED )
-88			return "This version of Winsock not supported";
-						/* Ýòà âåðñèÿ Winsock íå ïîääåðæèâàåòñÿ. */
-89		else if ( err == WSANOTINITIALISED )
-90			return "Winsock not initialized";
-						/* Winsock íå èíèöèàëèçèðîâàíà. */
-91		else
-92			return "Unknown error";
-						/* Íåèçâåñòíàÿ îøèáêà. */
-93 }
-——————————————————————————————————————————————————————————————wincompat.c
+#include <sys/timeb.h>
+#include "etcp.h"
+#include <winsock2.h>
+#define MINBSDSOCKERR			( WSAEWOULDBLOCK )
+#define MAXBSDSOCKERR			( MINBSDSOCKERR + \
+								( sizeof( bsdsocketerrs ) / \
+								sizeof( bsdsocketerrs[ 0 ] ) ) )
+extern int sys_nerr;
+extern char *sys_errlist[];
+extern char *program_name;
+static char *bsdsocketerrs[] =
+{
+"Resource temporarily unavailable",		/* Ð ÐµÑÑƒÑ€Ñ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð½Ð¾ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½. */
+"Operation now in progress",			/* ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ Ð½Ð°Ñ‡Ð°Ð»Ð° Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÑ‚ÑŒÑÑ. */
+"Operation already in progress",		/* ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¶Ðµ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ÑÑ. */
+"Socket operation on non-socket",		/* ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ¾ÐºÐµÑ‚Ð° Ð½Ðµ Ð½Ð°Ð´ ÑÐ¾ÐºÐµÑ‚Ð¾Ð¼. */
+"Destination address required",			/* ÐÑƒÐ¶ÐµÐ½ Ð°Ð´Ñ€ÐµÑ Ð½Ð°Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ. */
+"Message too long",						/* Ð¡Ð»Ð¸ÑˆÐºÐ¾Ð¼ Ð´Ð»Ð¸Ð½Ð½Ð¾Ðµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ. */
+"Protocol wrong type for socket",		/* ÐÐµÐ²ÐµÑ€Ð½Ñ‹Ð¹ Ñ‚Ð¸Ð¿ Ð¿Ñ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð»Ð° Ð´Ð»Ñ ÑÐ¾ÐºÐµÑ‚Ð°. */
+"Bad protocol option",					/* ÐÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð°Ñ Ð¾Ð¿Ñ†Ð¸Ñ Ð¿Ñ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð»Ð°. */
+"Protocol not supported",				/* ÐŸÑ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð» Ð½Ðµ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ. */
+"Socket type not supported",			/* Ð¢Ð¸Ð¿ ÑÐ¾ÐºÐµÑ‚Ð° Ð½Ðµ Ð¿Ð¾Ð´Ð´ÐµÐ¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ. */
+"Operation not supported",				/* ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ Ð½Ðµ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ. */
+"Protocol family not supported",		/* Ð¡ÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð¾ Ð¿Ñ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð»Ð¾Ð² Ð½Ðµ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ. */
+"Address family not supported by protocol family", /* ÐÐ´Ñ€ÐµÑÐ½Ð¾Ðµ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð¾ Ð½Ðµ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð¾Ð¼ Ð¿Ñ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð»Ð¾Ð² */	
+"Address already in use",				/* ÐÐ´Ñ€ÐµÑ ÑƒÐ¶Ðµ Ð¸ÑÐ¿Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ. */
+"Can't assign requested address",		/* ÐÐµ Ð¼Ð¾Ð³Ñƒ Ð²Ñ‹Ð´ÐµÐ»Ð¸Ñ‚ÑŒ Ð·Ð°Ñ‚Ñ€ÐµÐ±Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ð°Ð´Ñ€ÐµÑÑ. */
+"Network is down",						/* Ð¡ÐµÑ‚ÑŒ Ð½Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚. */
+"Network is unreachable",				/* Ð¡ÐµÑ‚ÑŒ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°. */
+"Network dropped connection on reset",	/* Ð¡ÐµÑ‚ÑŒ ÑÐ±Ñ€Ð¾ÑÐ¸Ð»Ð° ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð¿Ñ€Ð¸ Ð¿ÐµÑ€ÐµÐ·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ. */
+"Software caused connection abort", 	/* ÐŸÑ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð½Ñ‹Ð¹ Ñ€Ð°Ð·Ñ€Ñ‹Ð² ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ñ. */
+"Connection reset by peer",				/* Ð¡Ð¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ ÑÐ±Ñ€Ð¾ÑˆÐµÐ½Ð¾ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÑÑ‚Ð¾Ñ€Ð¾Ð½Ð¾Ð¹. */
+"No buffer space available",			/* ÐÐµÑ‚ Ð±ÑƒÑ„ÐµÑ€Ð¾Ð². */
+"Socket is already connected",			/* Ð¡Ð¾ÐºÐµÑ‚ ÑƒÐ¶Ðµ ÑÐ¾ÐµÐ´Ð¸Ð½Ñ‘Ð½. */
+"Socket is not connected",				/* Ð¡Ð¾ÐºÐµÑ‚ Ð½Ðµ ÑÐ¾ÐµÐ´Ð¸Ð½Ñ‘Ð½. */
+"Cannot send after socket shutdown",	/* ÐÐµ Ð¼Ð¾Ð³Ñƒ Ð¿Ð¾ÑÐ»Ð°Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¿Ð¾ÑÐ»Ðµ Ñ€Ð°Ð·Ð¼Ñ‹ÐºÐ°Ð½Ð¸Ñ. */
+"Too many references: can't splice",	/* Ð¡Ð»Ð¸ÑˆÐºÐ¾Ð¼ Ð¼Ð½Ð¾Ð³Ð¾ ÑÑÑ‹Ð»Ð¾Ðº. */
+"Connection timed out",					/* Ð¢Ð°Ð¹Ð¼Ð°ÑƒÑ‚ Ð½Ð° ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ð¸. */
+"Connection refused",					/* Ð’ ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ð¸ Ð¾Ñ‚ÐºÐ°Ð·Ð°Ð½Ð¾. */
+"Too many levels of symbolic links",	/* Ð¡Ð»Ð¸ÑˆÐºÐ¾Ð¼ Ð¼Ð½Ð¾Ð³Ð¾ ÑƒÑ€Ð¾Ð²Ð½ÐµÐ¹ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… ÑÑÑ‹Ð»Ð¾Ðº. */
+"File name too long",					/* Ð¡Ð»Ð¸ÑˆÐºÐ¾Ð¼ Ð´Ð»Ð¸Ð½Ð½Ð¾Ðµ Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°. */
+"Host is down",							/* Ð¥Ð¾ÑÑ‚ Ð½Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚. */
+"No route to host"						/* ÐÐµÑ‚ Ð¼Ð°Ñ€ÑˆÑ€ÑƒÑ‚Ð° Ðº Ñ…Ð¾ÑÑ‚Ñƒ. */
+};
+void init( char **argv )
+{
+	WSADATA wsadata;
+	( program_name = strrchr( argv[ 0 ], '\\' ) ) ?
+		program_name++ : ( program_name = argv[ 0 ] );
+	WSAStartup( MAKEWORD( 2, 2 ), &wsadata );
+}
+/* inet_aton - Ð²ÐµÑ€ÑÐ¸Ñ inet_aton Ð´Ð»Ñ SVr4 Ð¸ Windows. */
+int inet_aton( char *cp, struct in_addr *pin )
+{
+   int rc;
+	rc = inet_addr( cp );
+	if ( rc == -1 && strcmp( cp, "255.255.255.255" ) )
+		return 0;
+	pin->s_addr = rc;
+	return 1;
+}
+/* gettimeofday - Ð´Ð»Ñ tselect. */
+int gettimeofday( struct timeval *tvp, struct timezone *tzp )
+{
+	struct _timeb tb;
+	_ftime( &tb );
+	if ( tvp )
+	{
+		tvp->tv_sec = tb.time;
+		tvp->tv_usec = tb.millitm * 1000;
+	}
+	if ( tzp )
+	{
+		tzp->tz_minuteswest = tb.timezone;
+		tzp->tz_dsttime = tb.dstflag;
+	}
+}
+/* strerror - Ð²ÐµÑ€ÑÐ¸Ñ, Ð²ÐºÐ»ÑŽÑ‡Ð°ÑŽÑ‰Ð°Ñ ÐºÐ¾Ð´Ñ‹ Ð¾ÑˆÐ¸Ð±Ð¾Ðº Winsock. */
+char *strerror( int err )
+{
+	if ( err >= 0 && err < sys_nerr )
+		return sys_errlist[ err ];
+	else if ( err >= MINBSDSOCKERR && err < MAXBSDSOCKERR )
+		return bsdsocketerrs[ err - MINBSDSOCKERR ];
+	else if ( err == WSASYSNOTREADY )
+		return "Network subsystem is unusable";	/* Ð¡ÐµÑ‚ÐµÐ²Ð°Ñ Ð¿Ð¾Ð´ÑÐ¸ÑÑ‚ÐµÐ¼Ð° Ð½ÐµÑ€Ð°Ð±Ð¾Ñ‚Ð¾ÑÐ¿Ð¾ÑÐ¾Ð±Ð½Ð°. */
+	else if ( err == WSAVERNOTSUPPORTED )
+		return "This version of Winsock not supported";	/* Ð­Ñ‚Ð° Ð²ÐµÑ€ÑÐ¸Ñ Winsock Ð½Ðµ Ð¿Ð¾Ð¶Ð¶ÐµÑ€Ð¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ. */
+	else if ( err == WSANOTINITIALISED )
+			return "Winsock not initialized";	/* Winsock Ð½Ðµ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð°. */
+	else
+		return "Unknown error";	/* ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ°. */
+}

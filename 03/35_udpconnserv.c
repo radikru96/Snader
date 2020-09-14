@@ -1,13 +1,27 @@
-—————————————————————————————————————————————————————————endian.c
- 1 #include <stdio.h>
- 2 #include <sys/types.h>
- 3 #include "etcp.h"
- 4 int main( void )
- 5 {
- 6		u_int32_t x = 0x12345678;	/* 305419896 */
- 7		unsigned char *xp = ( char * )&x;
- 9		printf( "%0x %0x %0x %0x\n",
-10			xp[ 0 ], xp[ 1 ], xp[ 2 ], xp[ 3 ] );
-11		exit( 0 );
-12 }
-—————————————————————————————————————————————————————————endian.c
+#include "etcp.h"
+int main( int argc, char **argv )
+{
+    struct sockaddr_in peer;
+    SOCKET s;
+    int rc;
+    int len;
+    char buf[ 120 ];
+    INIT();
+    s = udp_server( NULL, argv[ 1 ] );
+    len = sizeof( peer );
+    rc = recvfrom( s, buf, sizeof( buf ),
+        0, ( struct sockaddr * )&peer, &len );
+    if ( rc < 0 )
+        error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° recvfrom" );
+    if ( connect( s, ( struct sockaddr * )&peer, len ) )
+        error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° connect" );
+    while ( strncmp( buf, "done", 4 ) != 0 )
+    {
+        if ( send( s, buf, rc, 0 ) < 0 )
+            error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° send" );
+        rc = recv( s, buf, sizeof( buf ), 0 );
+        if ( rc < 0 )
+            error( 1, errno, "Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° recv" );
+    }
+    EXIT( 0 );
+}

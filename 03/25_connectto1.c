@@ -1,52 +1,50 @@
-—————————————————————————————————————————————————————connectto1.c
- 1 int main( int argc, char **argv )
- 2 {
- 3		fd_set rdevents;
- 4		fd_set wrevents;
- 5		fd_set exevents;
- 6		struct sockaddr_in peer;
- 7		struct timeval tv;
- 8		SOCKET s;
- 9		int flags;
-10		int rc;
-11		INIT();
-12		set_address( argv[ 1 ], argv[ 2 ], &peer, "tcp" );
-13		s = socket( AF_INET, SOCK_STREAM, 0 );
-14		if ( !isvalidsock( s ) )
-15			error( 1, errno, "ошибка вызова socket " );
-16		if( ( flags = fcntl( s, F_GETFL, 0 ) ) < 0 )
-17			error( 1, errno, "ошибка вызова fcntl (F_GETFL)" );
-18		if ( fcntl( s, F_SETFL, flags | O_NONBLOCK ) < 0 )
-19			error( 1, errno, "ошибка вызова fcntl (F_SETFL)" );
-20		if ( ( rc = connect( s, ( struct sockaddr * )&peer,
-21			 sizeof( peer ) ) ) && errno != EINPROGRESS )
-22			error( 1, errno, "ошибка вызова connect" );
-23		if ( rc == 0 )	/* Уже соединен? */
-24		{
-25			if ( fcntl( s, F_SETFL, flags ) < 0 )
-26			error( 1, errno, "ошибка вызова fcntl (восстановление флагов)" );
-27			client( s, &peer );
-28			EXIT( 0 );
-29		}
-30		FD_ZERO( &rdevents );
-31		FD_SET( s, &rdevents );
-32		wrevents = rdevents;
-33		exevents = rdevents;
-34		tv.tv_sec = 5;
-35		tv.tv_usec = 0;
-36		rc = select( s + 1, &rdevents, &wrevents, &exevents, &tv );
-37		if ( rc < 0 )
-38			error( 1, errno, "ошибка вызова select" );
-39		else if ( rc == 0 )
-40			error( 1, 0, "истек тайм-аут connect\n" );
-41		else if ( isconnected( s, &rdevents, &wrevents, &exevents ) )
-42		{
-43			if ( fcntl( s, F_SETFL, flags ) < 0 )
-44			error( 1, errno, "ошибка вызова fcntl (восстановление флагов)" );
-45			client( s, &peer );
-46		}
-47		else
-48			error( 1, errno, "ошибка вызова connect" );
-49		EXIT( 0 );
-50 }
-—————————————————————————————————————————————————————connectto1.c
+int main( int argc, char **argv )
+{
+	fd_set rdevents;
+	fd_set wrevents;
+	fd_set exevents;
+	struct sockaddr_in peer;
+	struct timeval tv;
+	SOCKET s;
+	int flags;
+	int rc;
+	INIT();
+	set_address( argv[ 1 ], argv[ 2 ], &peer, "tcp" );
+	s = socket( AF_INET, SOCK_STREAM, 0 );
+	if ( !isvalidsock( s ) )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° socket " );
+	if( ( flags = fcntl( s, F_GETFL, 0 ) ) < 0 )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° fcntl (F_GETFL)" );
+	if ( fcntl( s, F_SETFL, flags | O_NONBLOCK ) < 0 )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° fcntl (F_SETFL)" );
+	if ( ( rc = connect( s, ( struct sockaddr * )&peer,
+		 sizeof( peer ) ) ) && errno != EINPROGRESS )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° connect" );
+	if ( rc == 0 )	/* РЈР¶Рµ СЃРѕРµРґРёРЅС‘РЅ? */
+	{
+		if ( fcntl( s, F_SETFL, flags ) < 0 )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° fcntl (РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ С„Р»Р°РіРѕРІ)" );
+		client( s, &peer );
+		EXIT( 0 );
+	}
+	FD_ZERO( &rdevents );
+	FD_SET( s, &rdevents );
+	wrevents = rdevents;
+	exevents = rdevents;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+	rc = select( s + 1, &rdevents, &wrevents, &exevents, &tv );
+	if ( rc < 0 )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° select" );
+	else if ( rc == 0 )
+		error( 1, 0, "РёСЃС‚С‘Рє С‚Р°Р№Рј-Р°СѓС‚ connect\n" );
+	else if ( isconnected( s, &rdevents, &wrevents, &exevents ) )
+	{
+		if ( fcntl( s, F_SETFL, flags ) < 0 )
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° fcntl (РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ С„Р»Р°РіРѕРІ)" );
+		client( s, &peer );
+	}
+	else
+		error( 1, errno, "РѕС€РёР±РєР° РІС‹Р·РѕРІР° connect" );
+	EXIT( 0 );
+}

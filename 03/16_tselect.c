@@ -1,20 +1,18 @@
-————————————————————————————————————————————————————————tselect.c
- 1 void untimeout( unsigned int id )
- 2 {
- 3		tevent_t **tprev;
- 4		tevent_t *tcur;
- 5		for ( tprev = &active, tcur = active;
- 6			  tcur && id != tcur->id;
- 7			  tprev = &tcur->next, tcur = tcur->next )
- 8		{ ; }
- 9		if ( tcur == NULL )
-10		{
-11			error( 0, 0,
-12			"ïðè âûçîâå untimeout óêàçàí íåñóùåñòâóþùèé òàéìåð (%d)\n", id );
-13			return;
-14		}
-15		*tprev = tcur->next;
-16		tcur->next = free_list;
-17		free_list = tcur;
-18 }
-————————————————————————————————————————————————————————tselect.c
+void untimeout( unsigned int id )
+{
+	tevent_t **tprev;
+	tevent_t *tcur;
+	for ( tprev = &active, tcur = active;
+		  tcur && id != tcur->id;
+		  tprev = &tcur->next, tcur = tcur->next )
+	{ ; }
+	if ( tcur == NULL )
+	{
+		error( 0, 0,
+		"Ð¿Ñ€Ð¸ Ð²Ñ‹Ð·Ð¾Ð²Ðµ untimeout ÑƒÐºÐ°Ð·Ð°Ð½ Ð½ÐµÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹ Ñ‚Ð°Ð¹Ð¼ÐµÑ€ (%d)\n", id );
+		return;
+	}
+	*tprev = tcur->next;
+	tcur->next = free_list;
+	free_list = tcur;
+}

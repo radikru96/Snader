@@ -1,23 +1,21 @@
-——————————————————————————————————————————————————————————readn.c
- 1 int readn( SOCKET fd, char *bp, size_t len)
- 2 {
- 3		int cnt;
- 4		int rc;
- 5		cnt = len;
- 6		while ( cnt > 0 )
- 7		{
- 8			rc = recv( fd, bp, cnt, 0 );
- 9			if ( rc < 0 )			/* Îøèáêà ÷òåíèÿ? */
-10			{
-11				if ( errno == EINTR )	/* Âûçîâ ïðåðâàí? */
-12					continue;			/* Ïîâòîðèòü ÷òåíèå. */
-13				return -1;			/* Âåðíóòü êîä îøèáêè. */
-14			}
-15			if ( rc == 0 )			/* Êîíåö ôàéëà? */
-16				return len - cnt;	/* Âåðíóòü íåïîëíûé ñ÷åò÷èê. */
-17			bp += rc;
-18			cnt -= rc;
-19		}
-20		return len;
-21 }
-——————————————————————————————————————————————————————————readn.c
+int readn( SOCKET fd, char *bp, size_t len)
+{
+	int cnt;
+	int rc;
+	cnt = len;
+	while ( cnt > 0 )
+	{
+		rc = recv( fd, bp, cnt, 0 );
+		if ( rc < 0 )			    /* ÐžÑˆÐ¸Ð±ÐºÐ° Ñ‡Ñ‚ÐµÐ½Ð¸Ñ? */
+		{
+			if ( errno == EINTR )	/* Ð’Ñ‹Ð·Ð¾Ð² Ð¿Ñ€ÐµÑ€Ð²Ð°Ð½? */
+				continue;			/* ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ. */
+			return -1;		    	/* Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒ ÐºÐ¾Ð´ Ð¾ÑˆÐ¸Ð±ÐºÐ¸. */
+		}
+		if ( rc == 0 )			    /* ÐšÐ¾Ð½ÐµÑ† Ñ„Ð°Ð¹Ð»Ð°? */
+			return len - cnt;	    /* Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð½ÐµÐ¿Ð¾Ð»Ð½Ñ‹Ð¹ ÑÑ‡ÐµÑ‚Ñ‡Ð¸Ðº. */
+		bp += rc;
+		cnt -= rc;
+	}
+	return len;
+}

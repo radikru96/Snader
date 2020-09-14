@@ -1,15 +1,13 @@
-——————————————————————————————————————————————————————heartbeat.h
- 1 #ifndef __HEARTBEAT_H__
- 2 #define __HEARTBEAT_H__
- 3 #define MSG_TYPE1		1	/* Сообщение прикладного уровня. */
- 4 #define MSG_TYPE2		2	/* Еще одно. */
- 5 #define MSG_HEARTBEAT	3	/* Сообщение-пульс. */
- 6 typedef struct				/* Структура сообщения. */
- 7 {
- 8	u_int32_t type;				/* MSG_TYPE1, ... */
- 9	char data[ 2000 ];
-10 } msg_t;
-11 #define T1			60	/* Время простоя перед отправкой пульса. */
-12 #define T2			10	/* Время ожидания ответа. */
-13 #endif  /* __HEARTBEAT_H__ */
-——————————————————————————————————————————————————————————heartbeat.h
+#ifndef __HEARTBEAT_H__
+#define __HEARTBEAT_H__
+#define MSG_TYPE1		1	/* РЎРѕРѕР±С‰РµРЅРёРµ РїСЂРёРєР»Р°РґРЅРѕРіРѕ СѓСЂРѕРІРЅСЏ. */
+#define MSG_TYPE2		2	/* Р•С‰С‘ РѕРґРЅРѕ. */
+#define MSG_HEARTBEAT	3	/* РЎРѕРѕР±С‰РµРЅРёРµ-РїСѓР»СЊСЃ. */
+typedef struct				/* РЎС‚СЂСѓРєС‚СѓСЂР° СЃРѕРѕР±С‰РµРЅРёСЏ. */
+{
+u_int32_t type;				/* MSG_TYPE1, ... */
+char data[ 2000 ];
+} msg_t;
+#define T1			60	/* Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РїРµСЂРµРґ РѕС‚РїСЂР°РІРєРѕР№ РїСѓР»СЊСЃР°. */
+#define T2			10	/* Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕС‚РІРµС‚Р°. */
+#endif  /* __HEARTBEAT_H__ */

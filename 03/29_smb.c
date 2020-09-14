@@ -1,20 +1,18 @@
-————————————————————————————————————————————————————————————smb.c
- 1 void smbsend( SOCKET s, void *b )
- 2 {
- 3		int index;
- 4		index = ( smb_t * )b - smbarray;
- 5		if ( send( s, ( char * )&index, sizeof( index ), 0 ) < 0 )
- 6			error( 1, errno, "smbsend: îøèáêà âûçîâà send" );
- 7 }
- 8 void *smbrecv( SOCKET s )
- 9 {
-10		int index;
-11		int rc;
-12		rc = readn( s, ( char * )&index, sizeof( index ) );
-13		if ( rc == 0 )
-14			error( 1, 0, "smbrecv: äðóãîé êîíåö îòñîåäèíèëñÿ\n" );
-15		else if ( rc != sizeof( index ) )
-16			error( 1, errno, "smbrecv: îøèáêà âûçîâà readn" );
-17		return smbarray + index;
-18 }
-—————————————————————————————————————————————————————————————smb.c
+void smbsend( SOCKET s, void *b )
+{
+	int index;
+	index = ( smb_t * )b - smbarray;
+	if ( send( s, ( char * )&index, sizeof( index ), 0 ) < 0 )
+		error( 1, errno, "smbsend: Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° send" );
+}
+void *smbrecv( SOCKET s )
+{
+	int index;
+	int rc;
+	rc = readn( s, ( char * )&index, sizeof( index ) );
+	if ( rc == 0 )
+		error( 1, 0, "smbrecv: Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÐºÐ¾Ð½ÐµÑ† Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½Ð¸Ð»ÑÑ\n" );
+	else if ( rc != sizeof( index ) )
+		error( 1, errno, "smbrecv: Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ð·Ð¾Ð²Ð° readn" );
+	return smbarray + index;
+}
